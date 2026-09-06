@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Django Blog{% endblock %}
+
+{% block content %}
+<h1>Latest Posts</h1>
+
+<div class="filters">
+    <a class="{% if not active_category %}active{% endif %}" href="{% url 'post-list' %}">All</a>
+    {% for category in categories %}
+        <a class="{% if active_category == category.slug %}active{% endif %}"
+           href="{% url 'post-list' %}?category={{ category.slug }}">{{ category.name }}</a>
+    {% endfor %}
+</div>
+
+{% if posts %}
+    {% for post in posts %}
+        <article class="post-card">
+            <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+            <p class="meta">
+                By {{ post.author.username }}
+                {% if post.category %} in {{ post.category.name }}{% endif %}
+                on {{ post.created_at|date:"M d, Y" }}
+            </p>
+            <p>{{ post.content|truncatewords:40 }}</p>
+            {% if user == post.author %}
+                <p class="actions">
+                    <a href="{% url 'post-update' post.slug %}">Edit</a>
+                    <a href="{% url 'post-delete' post.slug %}">Delete</a>
+                </p>
+            {% endif %}
+        </article>
+    {% endfor %}
+
+    {% if is_paginated %}
+        <nav class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}">Previous</a>
+            {% endif %}
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}">Next</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+{% else %}
+    <p>No posts yet.{% if user.is_authenticated %} <a href="{% url 'post-create' %}">Write the first one</a>.{% endif %}</p>
+{% endif %}
+{% endblock %}

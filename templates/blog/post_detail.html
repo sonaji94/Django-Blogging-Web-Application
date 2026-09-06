@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | Django Blog{% endblock %}
+
+{% block content %}
+<article class="post-detail">
+    <h1>{{ post.title }}</h1>
+    <p class="meta">
+        By {{ post.author.username }}
+        {% if post.category %}
+            in <a href="{% url 'post-list' %}?category={{ post.category.slug }}">{{ post.category.name }}</a>
+        {% endif %}
+        on {{ post.created_at|date:"M d, Y H:i" }}
+        {% if post.updated_at != post.created_at %}
+            · Updated {{ post.updated_at|date:"M d, Y H:i" }}
+        {% endif %}
+    </p>
+    <div class="content">{{ post.content|linebreaks }}</div>
+    {% if user == post.author %}
+        <p class="actions">
+            <a class="button" href="{% url 'post-update' post.slug %}">Edit</a>
+            <a class="button button-danger" href="{% url 'post-delete' post.slug %}">Delete</a>
+        </p>
+    {% endif %}
+</article>
+{% endblock %}

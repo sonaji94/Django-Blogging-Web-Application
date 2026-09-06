@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}New Category | Django Blog{% endblock %}
+
+{% block content %}
+<h1>New Category</h1>
+<form method="post" class="form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create category</button>
+    <a class="button-link" href="{% url 'post-list' %}">Cancel</a>
+</form>
+{% endblock %}
